@@ -16,37 +16,25 @@ namespace WebSite.Models
         public int Id { get; set; }
         [Required]
         public string Title { get; set; }
-        [MaxLength(200)]
+        [MaxLength(2000)]
         public string Description { get; set; }
-        [Required]
-        public string ISBN { get; set; }
+
+        public bool IsBestSeller { get; set; }
+
+        [Range(0, 100, ErrorMessage = "Discount must be between 0 and 100")]
+        public double Discount { get; set; }
         [Required]
         public string Author { get; set; }
         [Required]
-        [Display(Name = "List Price")]
         [Range(1, 1000)]
-        public double ListPrice {  get; set; }
-
-        [Required]
-        [Display(Name = "Price for 1-50")]
-        [Range(1, 1000)]
-        public double Price { get; set; }
-
-        [Required]
-        [Display(Name = "Price for 50+")]
-        [Range(1, 1000)]
-        public double Price50 { get; set; }
-
-        [Required]
-        [Display(Name = "Price 100+")]
-        [Range(1, 1000)]
-        public double Price100 { get; set; }
+        public double Price {  get; set; }
 
         public int CategoryId { get; set; }
         [ForeignKey("CategoryId")]
         [ValidateNever]
         public Category Category { get; set; }
+
         [ValidateNever]
-        public string? ImageURL { get; set; }
+        public List<ProductImage> Images { get; set; }
     }
 }

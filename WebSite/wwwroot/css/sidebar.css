@@ -1,0 +1,88 @@
+﻿.sidebar {
+    height: 100vh; /* Змінимо на vh для точного контролю */
+    width: 0;
+    position: fixed;
+    z-index: 1030;
+    top: 0;
+    left: 0;
+    background-color: #fff;
+    overflow-x: hidden;
+    overflow-y: hidden; /* Вимкнемо вертикальний скролл */
+    transition: 0.5s;
+    padding-top: 0;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+/* Додано новий блок для шапки сайдбара */
+.sidebar-header {
+    height: var(--navbar-height, 73px);
+    min-height: var(--navbar-height, 71px);
+    flex-shrink: 0; /* Забороняємо стискання */
+    background: linear-gradient(135deg, #F9F295 0%, #E0AA3E 30%, #E0AA3E 45%, #B88A44 70%, #B88A44 100%);
+    background-size: 200% 200%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    animation: gradientFlow 8s ease infinite;
+}
+
+@keyframes gradientFlow {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.sidebar-content {
+    padding-top: 10px;
+    overflow-y: auto;
+    height: calc(100% - 56px);
+}
+
+.sidebar a {
+    padding: 8px 16px;
+    text-decoration: none;
+    font-size: 16px;
+    color: #212529;
+    display: block;
+    transition: 0.3s;
+}
+
+    .sidebar a:hover {
+        background-color: #f8f9fa;
+    }
+
+.sidebar .close-btn {
+    position: static; /* Змінено з absolute */
+    font-size: 24px;
+    color: white; /* Додано білий колір */
+    margin-left: 0; /* Змінено з 50px */
+}
+
+.burger-menu-btn {
+    font-size: 24px;
+    cursor: pointer;
+    margin-right: 15px;
+}
+
+.main-content {
+    transition: margin-left 0.5s;
+}
+
+.dropdown-menu {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.dropdown-item {
+    padding-left: 30px !important;
+}

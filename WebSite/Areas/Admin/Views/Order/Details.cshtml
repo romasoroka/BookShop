@@ -1,0 +1,139 @@
+﻿@model Order
+
+<div class="container py-5">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Order Details #@Model.Id</h2>
+        </div>
+
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h4 class="text-dark">Order Information</h4>
+                    <dl class="row">
+                        <dt class="col-sm-4">Order Date:</dt>
+                        <dd class="col-sm-8">@Model.OrderDate.ToString("f")</dd>
+
+                        <dt class="col-sm-4">Status:</dt>
+                        <dd class="col-sm-8">
+                            <span class="badge @GetStatusBadgeClass(Model.Status)">
+                                @Model.Status
+                            </span>
+                        </dd>
+
+                        <dt class="col-sm-4">Total Amount:</dt>
+                        <dd class="col-sm-8">@Model.TotalPrice.ToString()₴</dd>
+                    </dl>
+                </div>
+
+                <div class="col-md-6">
+                    <h4 class="text-dark">Customer Information</h4>
+                    <dl class="row">
+                        <dt class="col-sm-4">Customer:</dt>
+                        <dd class="col-sm-8">@Model.User?.Name</dd>
+
+                        <dt class="col-sm-4">Email:</dt>
+                        <dd class="col-sm-8">@Model.User?.Email</dd>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h4 class="text-dark">Shipping Information</h4>
+                    <address>
+                        @Model.ShippingAddress<br>
+                        @Model.ShippingCity, @Model.ShippingPostalCode
+                    </address>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h4 class="text-dark">Payment Information</h4>
+                    @if (Model.Payment != null)
+                    {
+                        <dl class="row">
+                            <dt class="col-sm-3">Payment Method:</dt>
+                            <dd class="col-sm-9">@Model.Payment.PaymentMethod</dd>
+
+                            <dt class="col-sm-3">Payment Date:</dt>
+                            <dd class="col-sm-9">@Model.Payment.PaymentDate.ToString("f")</dd>
+
+                            @if (Model.Payment.PaymentMethod == "Card")
+                            {
+                                <dt class="col-sm-3">Card Number:</dt>
+                                <dd class="col-sm-9">@Model.Payment.CardNumber</dd>
+
+                                <dt class="col-sm-3">Card Holder:</dt>
+                                <dd class="col-sm-9">@Model.Payment.CardHolderName</dd>
+                            }
+                        </dl>
+                    }
+                    else
+                    {
+                        <p>No payment information available.</p>
+                    }
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <h4 class="text-dark">Order Items</h4>
+                    <table class="table table-bordered">
+                        <thead class="bg-dark">
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.OrderItems)
+                            {
+                                <tr>
+                                    <td>@item.Product.Title</td>
+                                    <td>@item.Price.ToString()₴</td>
+                                    <td>@item.Quantity</td>
+                                    <td>@((item.Price * item.Quantity).ToString())₴</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" class="text-right font-weight-bold">Total:</td>
+                                <td class="font-weight-bold">@Model.TotalPrice.ToString()₴</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-12 text-right">
+                    <a asp-action="Index" class="btn btn-secondary">Back to Orders</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetStatusBadgeClass(string status)
+    {
+        switch (status)
+        {
+            case "Ordered":
+                return "bg-warning";
+            case "Sent":
+                return "bg-info";
+            case "Delivered":
+                return "bg-success";
+            case "Finished":
+                return "bg-success";
+            default:
+                return "bg-secondary";
+        }
+    }
+}

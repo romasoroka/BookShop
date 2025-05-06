@@ -11,8 +11,6 @@ namespace WebSite.Models
         [MaxLength(20)]
         [DisplayName("Category Name")]
         public string Name { get; set; }
-        [DisplayName("Display Order")]
-        [Range(1, 20, ErrorMessage ="Range is between 1-20")]
-        public int DisplayOrder { get; set; }
+       
     }
 }

@@ -1,0 +1,38 @@
+﻿@model List<Order>
+
+<div class="card shadow border mt-4">
+    <div class="card-header bg-dark bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">Order List</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-end">
+                    <a asp-controller="Order" asp-action="Upsert" class="btn btn-primary">
+                        <i class="bi bi-plus"></i> Create New Order
+                    </a>
+                </div>
+            </div>
+        </div>
+        <table id="tblData" class="table table-bordered table-striped">
+            <thead class="bg-black">
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Order Date</th>
+                    <th>Total Price</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/order.js"></script>
+}

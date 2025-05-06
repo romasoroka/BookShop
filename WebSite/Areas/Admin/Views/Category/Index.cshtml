@@ -2,7 +2,7 @@
 
 
 <div class="card shadow border mt-4">
-	<div class="card-header bg-secondary bg-gradient ml-0 py-3">
+	<div class="card-header bg-dark bg-gradient ml-0 py-3">
 		<div class="row">
 			<div class="col-12 text-center">
 				<h2 class="text-white py-2">Category list</h2>
@@ -15,40 +15,24 @@
 			<div class="row">
 
 				<div class="col-12 text-end">
-					<a asp-controller="Category" asp-action="Create" class="btn btn-primary">
+					<a asp-controller="Category" asp-action="Upsert" class="btn btn-primary">
 						<i class="bi bi-plus"></i> Create new category
 					</a>
 				</div>
 			</div>
 		</div>
-		<table class="table table-bordered, table-striped">
+		<table id="tblData" class="table table-bordered table-striped bg-black">
 			<thead>
 				<tr>
 					<th>Category name</th>
-					<th>Display order</th>
 					<th>Actions</th>
 				</tr>
 			</thead>
-			<tbody>
-
-				@foreach (var el in Model.OrderBy(u => u.DisplayOrder))
-				{
-					<tr>
-						<td>@el.Name</td>
-						<td>@el.DisplayOrder</td>
-						<td>
-							<div class="btn-group" role="group">
-								<a asp-controller="Category" asp-action="Edit" asp-route-id=@el.Id class="btn btn-primary">
-									<i class="bi bi-pencil"></i>
-								</a>
-								<a asp-controller="Category" asp-action="Delete" asp-route-id=@el.Id class="btn btn-danger">
-									<i class="bi bi-trash"></i>
-								</a>
-							</div>
-						</td>
-					</tr>
-				}
-			</tbody>
 		</table>
 	</div>
+	
 </div>
+
+@section Scripts {
+	<script src="~/js/category.js"></script>
+}

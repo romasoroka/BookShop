@@ -11,10 +11,12 @@ function loadDataTable() {
         },
         "columns": [
             { "data": "title", "width": "20%" },
-            { "data": "isbn", "width": "15%" },
             { "data": "author", "width": "15%" },
-            { "data": "listPrice", "width": "15%" },
+            { "data": "price", "width": "10%" },
+            { "data": "discount", "width": "10%" },
+            { "data": "isBestSeller", "width": "10%" },
             { "data": "category.name", "width": "15%" },
+
             {
                 "data": "id", "width": "20%",
                 "render": function (data) {

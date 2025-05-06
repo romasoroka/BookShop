@@ -1,7 +1,7 @@
 ﻿@model ProductVM
 
 <div class="card shadow border mt-4 mb-5">
-	<div class="card-header bg-secondary bg-gradient ml-0 py-3">
+	<div class="card-header bg-dark bg-gradient ml-0 py-3">
 		<div class="row">
 			<div class="col-12 text-center">
 				<h2 class="text-white py-2">@(Model.Product.Id!=0?"Update":"Create") product</h2>
@@ -12,7 +12,7 @@
 		<form method="post" enctype="multipart/form-data">
             
             <input asp-for="Product.Id" hidden />
-            <input asp-for="Product.ImageURL" hidden />
+            
            <div class="row">
                <div class="col-10">
                     <div class="border p-3 mt-4">
@@ -22,17 +22,11 @@
                             <span asp-validation-for="Product.Title" class="text-danger"></span>
                         </div>
 
-                        <div class="form-floating py-2 col-12">
+                        <div class=" py-2 col-12">
                             <label asp-for="Product.Description" class="ms-2 text-muted"></label>
                             <textarea asp-for="Product.Description" class="form-control border-0 shadow textarea"></textarea>
                         </div>
 
-
-                        <div class="form-floating py-2 col-12">
-                            <input asp-for="Product.ISBN" class="form-control border-0 shadow" />
-                            <label asp-for="Product.ISBN" class="ms-2"></label>
-                            <span asp-validation-for="Product.ISBN" class="text-danger"></span>
-                        </div>
 
                         <div class="form-floating py-2 col-12">
                             <input asp-for="Product.Author" class="form-control border-0 shadow" />
@@ -41,27 +35,21 @@
                         </div>
 
                         <div class="form-floating py-2 col-12">
-                            <input asp-for="Product.ListPrice" class="form-control border-0 shadow" />
-                            <label asp-for="Product.ListPrice" class="ms-2"></label>
-                            <span asp-validation-for="Product.ListPrice" class="text-danger"></span>
+                            <input asp-for="Product.Discount" class="form-control border-0 shadow" />
+                            <label asp-for="Product.Discount" class="ms-2"></label>
+                            <span asp-validation-for="Product.Discount" class="text-danger"></span>
                         </div>
+                        <div class="form-check form-switch py-2 col-12">
+                            <input class="form-check-input" type="checkbox" asp-for="Product.IsBestSeller" />
+                            <label class="form-check-label" asp-for="Product.IsBestSeller"></label>
+                            <span asp-validation-for="Product.IsBestSeller" class="text-danger"></span>
+                        </div>
+
 
                         <div class="form-floating py-2 col-12">
                             <input asp-for="Product.Price" class="form-control border-0 shadow" />
                             <label asp-for="Product.Price" class="ms-2"></label>
                             <span asp-validation-for="Product.Price" class="text-danger"></span>
-                        </div>
-
-                        <div class="form-floating py-2 col-12">
-                            <input asp-for="Product.Price50" class="form-control border-0 shadow" />
-                            <label asp-for="Product.Price50" class="ms-2"></label>
-                            <span asp-validation-for="Product.Price50" class="text-danger"></span>
-                        </div>
-
-                        <div class="form-floating py-2 col-12">
-                            <input asp-for="Product.Price100" class="form-control border-0 shadow" />
-                            <label asp-for="Product.Price100" class="ms-2"></label>
-                            <span asp-validation-for="Product.Price100" class="text-danger"></span>
                         </div>
 
                         <div class="form-floating py-2 col-12">
@@ -71,11 +59,13 @@
                             <label asp-for="Product.CategoryId" class="ms-2"></label>
                             <span asp-validation-for="Product.CategoryId" class="text-danger"></span>
                         </div>
+                       
                         <div class="form-floating py-2 col-12">
-                            <input type="file" name="file" class="form-control border-0 shadow" />
-                            <label asp-for="Product.ImageURL" class="ms-2"></label>
+                            <input type="file" name="files" class="form-control border-0 shadow" multiple />
+                            <label class="ms-2">Product Images</label>
                         </div>
 
+                       
 
 
                         @* <div class="row">
@@ -92,9 +82,9 @@
                         <a asp-controller="Product" asp-action="Index" class="btn btn-secondary">Back to list</a>
                     </div>
                </div>
-                <div class="col-2">
+               @*  <div class="col-2">
                     <img src="@Model.Product.ImageURL" style="width: 100%;" />
-                </div>
+                </div> *@
            </div>
 			
 		</form>
@@ -111,10 +101,20 @@
             'autolink', 'lists', 'link', 'charmap', 'visualblocks', 'wordcount'
           ],
           toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright | numlist bullist | removeformat',
-          menubar: false, // Вимкнення меню
-          statusbar: false, // Вимкнення нижнього статусного рядка
+          menubar: false, 
+          statusbar: false, 
         });
 
+                function deleteImage(id) {
+            $.ajax({
+                url: '@Url.Action("DeleteImage", "Product")',
+                type: 'DELETE',
+                data: { id: id },
+                success: function() {
+                    location.reload();
+                }
+            });
+        }
     </script>
 	@{
 		<partial name="_ValidationScriptsPartial"/>

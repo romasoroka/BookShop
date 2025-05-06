@@ -13,5 +13,8 @@ namespace WebSite.Models.ViewModels
         public Product Product { get; set; }
         [ValidateNever]
         public IEnumerable<SelectListItem> CategoryList { get; set; }
+        public List<ProductImage> Images { get; set; } = new();
+
+
     }
 }

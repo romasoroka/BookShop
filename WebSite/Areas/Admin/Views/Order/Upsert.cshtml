@@ -1,0 +1,168 @@
+﻿@model Order
+
+<div class="card shadow border mt-4">
+    <div class="card-header bg-dark bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">@(Model.Id != 0 ? "Update" : "Create") Order</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-4">
+        <form method="post" id="orderForm">
+            <input asp-for="Id" hidden />
+            <input asp-for="OrderDate" hidden />
+
+            <div class="border p-3 mt-4">
+                <div class="row">
+                    <!-- Customer Information -->
+                    <div class="col-md-6">
+                        <h4 class="mb-3 text-dark">Customer Information</h4>
+                        <div class="form-floating py-2 col-12">
+                            <input asp-for="User.Name" class="form-control border-0 shadow"
+                                   readonly="@(Model.Id != 0)" />
+                            <label asp-for="User.UserName" class="ms-2"></label>
+                        </div>
+                        <div class="form-floating py-2 col-12">
+                            <input asp-for="User.Email" class="form-control border-0 shadow"
+                                   readonly="@(Model.Id != 0)" />
+                            <label asp-for="User.Email" class="ms-2"></label>
+                        </div>
+                        <input asp-for="UserId" hidden />
+                    </div>
+
+
+                    <!-- Order Details -->
+                    <div class="col-md-6">
+                        <h4 class="mb-3 text-dark">Order Details</h4>
+                        <div class="form-floating py-2 col-12">
+                            <select asp-for="Status" class="form-select border-0 shadow">
+                                <option value="@OS.Ordered">@OS.Ordered</option>
+                                <option value="@OS.Sent">@OS.Sent</option>
+                                <option value="@OS.Delivered">@OS.Delivered</option>
+                                <option value="@OS.Finished">@OS.Finished</option>
+                            </select>
+                            <label asp-for="Status" class="ms-2"></label>
+                            <span asp-validation-for="Status" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating py-2 col-12">
+                            <input asp-for="TotalPrice" class="form-control border-0 shadow"
+                                   id="totalPrice" readonly />
+                            <label asp-for="TotalPrice" class="ms-2"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shipping Information -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h4 class="mb-3 text-dark">Shipping Information</h4>
+                        <div class="form-floating py-2 col-12">
+                            <input asp-for="ShippingAddress" class="form-control border-0 shadow" />
+                            <label asp-for="ShippingAddress" class="ms-2"></label>
+                            <span asp-validation-for="ShippingAddress" class="text-danger"></span>
+                        </div>
+                        <div class="row">
+                            <div class="form-floating py-2 col-md-6">
+                                <input asp-for="ShippingCity" class="form-control border-0 shadow" />
+                                <label asp-for="ShippingCity" class="ms-2"></label>
+                                <span asp-validation-for="ShippingCity" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating py-2 col-md-6">
+                                <input asp-for="ShippingPostalCode" class="form-control border-0 shadow" />
+                                <label asp-for="ShippingPostalCode" class="ms-2"></label>
+                                <span asp-validation-for="ShippingPostalCode" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <h4 class="text-dark">Order Items</h4>
+                        <table class="table table-bordered">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.OrderItems)
+                                {
+                                    <tr>
+                                        <td>@item.Product.Title</td>
+                                        <td>@item.Price.ToString("C")</td>
+                                        <td>@item.Quantity</td>
+                                        <td>@((item.Price * item.Quantity).ToString("C"))</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-right font-weight-bold">Total:</td>
+                                    <td class="font-weight-bold">@Model.TotalPrice.ToString("C")</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="row pt-4">
+                    <div class="col-6">
+                        @if (Model.Id != 0)
+                        {
+                            <button type="submit" class="btn btn-primary">Update</button>
+                        }
+                        else
+                        {
+                            <button type="submit" class="btn btn-primary">Create</button>
+                        }
+                    </div>
+                    <div class="col-6 text-end">
+                        <a asp-controller="Order" asp-action="Index" class="btn btn-secondary">Back to List</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function() {
+            // Add new item
+            $('#addItemBtn').click(function() {
+                $.get('/Admin/Order/GetOrderItemRow', function(data) {
+                    $('#orderItemsContainer').append(data);
+                    recalculateTotal();
+                });
+            });
+
+            // Remove item
+            $(document).on('click', '.remove-item', function() {
+                $(this).closest('.order-item-row').remove();
+                recalculateTotal();
+            });
+
+            // Recalculate total when items change
+            $(document).on('change', '.item-quantity, .item-price', function() {
+                recalculateTotal();
+            });
+
+            function recalculateTotal() {
+                let total = 0;
+                $('.order-item-row').each(function() {
+                    const quantity = parseFloat($(this).find('.item-quantity').val()) || 0;
+                    const price = parseFloat($(this).find('.item-price').val()) || 0;
+                    total += quantity * price;
+                });
+                $('#totalPrice').val(total.toFixed(2));
+            }
+        });
+    </script>
+}
