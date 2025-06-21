@@ -1,72 +1,151 @@
 ﻿@model ShoppingCart
 
-
 <form method="post">
-    <input hidden asp-for="ProductId" /> 
+    <input hidden asp-for="ProductId" />
     <div class="card shadow border-0 mt-4">
+        <!-- Card Header -->
         <div class="card-header bg-dark bg-gradient text-light py-4">
-            <div class="row">
+            <div class="row align-items-center">
                 <div class="col-12 text-center">
-                    <h3 class="text-white text-uppercase">@Model.Product.Title</h3>
-                    <p class="text-white-50 fw-semibold mb-0">by @Model.Product.Author</p>
+                    <h2 class="text-white text-uppercase fw-bold mb-2">@Model.Product.Title</h2>
+                    <p class="text-white-50 mb-0 fs-5">@Model.Product.Author</p>
                 </div>
             </div>
         </div>
-        <div class="card-body">
-            <div class="py-3">
-                <div class="row">
-                    @* <div class="col-12 col-lg-3 offset-lg-1 text-center mb-3">
-                        <img src="@Model.Product.ImageURL" width="100%" class="rounded" />
-                    </div> *@
-                    <div class="col-12 col-lg-6 offset-lg-1">
 
-                        <div class="col-12 col-md-6 pb-4">
-                            <span class="badge bg-dark fs-6 p-2">Category: @Model.Product.Category.Name</span>
+        <!-- Card Body -->
+        <div class="card-body p-4">
+            <div class="row g-4">
+                <!-- Product Images Carousel -->
+                @if(Model.Product.Images != null && Model.Product.Images.Any())
+                {
+                    <div class="col-lg-5">
+                        <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner rounded-3">
+                                @for(int i = 0; i < Model.Product.Images.Count; i++)
+                                {
+                                    <div class="carousel-item @(i == 0 ? "active" : "")">
+                                        <img src="@Model.Product.Images[i].ImageUrl" class="d-block w-100" alt="Product image">
+                                    </div>
+                                }
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" style="filter: brightness(0)" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" style="filter: brightness(0)" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
                         </div>
-                        <div class="row ps-2">
-                            <h6 class="text-dark text-opacity-50 ">Author : @Model.Product.Author</h6>
+                    </div>
+                }
+
+                <!-- Product Details -->
+                <div class="col-lg-7">
+                    <div class="d-flex flex-column h-100">
+                        <!-- Badges -->
+                        <div class="mb-3">
+                            <span class="badge bg-primary fs-6 p-2 mb-2">@Model.Product.Category.Name</span>
+                            @if(Model.Product.IsBestSeller)
+                            {
+                                <span class="badge bg-danger fs-6 p-2 mb-2 ms-2">Хіт продажу</span>
+                            }
+                            @if(Model.Product.IsForKids)
+                            {
+                                <span class="badge bg-success fs-6 p-2 mb-2 ms-2">Для дітей</span>
+                            }
+                            @if(Model.Product.Discount > 0)
+                            {
+                                <span class="badge bg-warning text-dark fs-6 p-2 mb-2 ms-2">@Model.Product.Discount% OFF</span>
+                            }
                         </div>
-                        <div class="row ps-2">
-                            <h6 class="text-dark text-opacity-50  pb-2">
-                                Price:
-                                <span>
-                                    @Model.Product.Price.ToString("C", new System.Globalization.CultureInfo("en-US"))
-                                </span>
-                            </h6>
+
+                        <!-- Price Section -->
+                        <div class="mb-4">
+                            @if(Model.Product.Discount > 0)
+                            {
+                                <div class="d-flex align-items-center">
+                                    <h3 class="text-danger me-3 mb-0">
+                                        @((Model.Product.Price * (100 - Model.Product.Discount) / 100).ToString("C", new System.Globalization.CultureInfo("pl-PL")))
+                                    </h3>
+                                    <h5 class="text-muted text-decoration-line-through mb-0">
+                                        @Model.Product.Price.ToString("C", new System.Globalization.CultureInfo("pl-PL"))
+                                    </h5>
+                                </div>
+                            }
+                            else
+                            {
+                                <h3 class="text-primary">@Model.Product.Price.ToString("C", new System.Globalization.CultureInfo("pl-PL"))</h3>
+                            }
                         </div>
-                        <div class="row pl-2 my-3">
-                            <p class="text-secondary lh-sm">@Html.Raw(Model.Product.Description)</p>
+
+                        <!-- Author -->
+                        <div class="mb-4">
+                            <h5 class="text-dark">
+                                <i class="bi bi-person-fill text-secondary me-2"></i>
+                                Автор: <span class="text-muted">@Model.Product.Author</span>
+                            </h5>
                         </div>
-                        <div class="row pl-2 mb-3">
-                            <div class="col-md-4">
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text bg-primary text-white border-0 fw-semibold"
-                                          id="inputGroup-sizing-default">
-                                        Count
-                                    </span>
-                                    <input asp-for="Count" type="number" value="1" min="1"
-                                           class="form-control bg-white text-dark border-primary border-2 text-center py-2 "
-                                           aria-label="Product quantity">
+
+                        <!-- Description -->
+                        <div class="mb-4 flex-grow-1">
+                            <h5 class="text-dark mb-3">Опис:</h5>
+                            <div class="text-secondary lh-lg fs-5">@Html.Raw(Model.Product.Description)</div>
+                        </div>
+
+                        <!-- Quantity and Buttons -->
+                        <div class="mt-auto">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text bg-primary text-white fw-semibold">
+                                            <i class="bi bi-cart3 me-2"></i>Кількість
+                                        </span>
+                                        <input asp-for="Count" type="number" value="1" min="1" max="100"
+                                               class="form-control border-primary text-center py-2 fs-5"
+                                               aria-label="Quantity">
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                        <button type="submit" class="btn btn-primary btn-lg px-4 py-2 me-md-2">
+                                            <i class="bi bi-cart-plus me-2"></i>В кошик
+                                        </button>
+                                        <a asp-action="Shop" class="btn btn-outline-secondary btn-lg px-4 py-2">
+                                            <i class="bi bi-arrow-left me-2"></i>Назад
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-12 col-md-6 pb-1">
-                                <button type="submit" 
-                                        class="btn btn-primary bg-gradient  w-100 py-2 text-uppercase fw-semibold">
-                                    Add to Cart
-                                </button>
-                            </div>
-                            <div class="col-12 col-md-6 pb-1">
-                                <a asp-action="Index" class="btn btn-outline-primary bg-gradient mb-5 fw-semibold btn-sm text-uppercase">
-                                    <small>Back to home</small>
-                                </a>
-                            </div>
-                        </div>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
 </form>
+
+    <style>
+        .carousel-item img {
+            max-height: 500px;
+            object-fit: contain;
+        }
+        
+        .card {
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            border-bottom: none;
+        }
+        
+        .input-group-text {
+            border-radius: 0.25rem 0 0 0.25rem !important;
+        }
+        
+        .form-control {
+            border-radius: 0 0.25rem 0.25rem 0 !important;
+        }
+    </style>

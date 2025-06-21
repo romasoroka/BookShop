@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using WebSite.DataAccess.Repository.IRepository;
 using WebSite.Models;
 using WebSite.Utility;
@@ -19,7 +20,6 @@ namespace WebSite.Areas.Customer.Controllers
 
         public IActionResult Index()
         {
-            // Отримуємо userId з куків або контексту
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
             if (string.IsNullOrEmpty(userId))
@@ -34,7 +34,10 @@ namespace WebSite.Areas.Customer.Controllers
             var checkoutVM = new CheckoutVM
             {
                 CartItems = shoppingCart,
-                TotalAmount = (decimal)shoppingCart.Sum(x => (decimal)x.Product.Price * x.Count)
+                TotalAmount = shoppingCart.Sum(x =>
+                     (decimal)x.Product.Price * (1 - (decimal)x.Product.Discount / 100m) * x.Count
+                )
+
             };
 
             return View(checkoutVM);
@@ -70,7 +73,7 @@ namespace WebSite.Areas.Customer.Controllers
 
             foreach (var item in cartItems)
             {
-                var itemTotalPrice = (decimal)item.Product.Price * item.Count;
+                var itemTotalPrice = (decimal)item.Product.Price * (1 - (decimal)item.Product.Discount / 100m) * item.Count;
                 order.TotalPrice += itemTotalPrice;
 
                 order.OrderItems.Add(new OrderItem
@@ -87,17 +90,9 @@ namespace WebSite.Areas.Customer.Controllers
                 UserId = userId,
                 Amount = model.TotalAmount,
                 PaymentMethod = model.PaymentMethod,
-                PaymentDate = DateTime.Now
             };
 
-            // Для картки зберігаємо додаткові дані
-            if (model.PaymentMethod == "Card")
-            {
-                payment.CardNumber = MaskCardNumber(model.CardNumber);
-                payment.CardHolderName = model.CardHolderName;
-                payment.CardExpiry = model.CardExpiry;
-                payment.CardCvv = model.CardCvv;
-            }
+           
 
             // Зберігаємо дані
             _unitOfWork.Payment.Add(payment);
@@ -110,16 +105,16 @@ namespace WebSite.Areas.Customer.Controllers
             // Очищаємо кошик
             _unitOfWork.ShoppingCart.RemoveRange(cartItems);
             _unitOfWork.Save();
-            TempData["success"] = "Successfully created order";
-
+            var alertData = new
+            {
+                Title = "Замовлення успішно створено!",
+                OrderNumber = order.Id,
+                Message = "Наш менеджер зв'яжеться з вами для підтвердження та оплати."
+            };
+            TempData["OrderSuccess"] = JsonConvert.SerializeObject(alertData);
 
             return RedirectToAction("Index", "Home");
         }
 
-        private string MaskCardNumber(string cardNumber)
-        {
-            if (string.IsNullOrWhiteSpace(cardNumber) ) return string.Empty;
-            return "****-****-****-" + cardNumber.Substring(cardNumber.Length - 4);
-        }
     }
 }

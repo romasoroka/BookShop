@@ -3,3 +3,110 @@
     --bs-primary-rgb: 112, 45, 9;
     --bs-bg-opacity: 1;
 }
+
+.zoom-effect {
+    transition: transform 0.7s ease; 
+}
+
+    .zoom-effect:hover {
+        transform: scale(1.1); 
+    }
+
+html, body {
+    height: 100%;
+    margin-left: calc(-50vw + 50%);
+    overflow-x: hidden; /* Ховає горизонтальний скролл */
+
+}
+
+.container{
+    height: 100%;
+}
+
+
+.close-btn {
+    color: white; /* Білий колір іконки */
+    font-size: 2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: transparent !important; /* Важливо: відключає будь-який фон */
+    border: none;
+    padding: 0.5rem;
+}
+
+    .close-btn:hover {
+        color: #F9F295; /* Світло-золотий при наведенні */
+        transform: scale(1.1); /* Легке збільшення */
+        text-shadow: 0 0 8px rgba(249, 242, 149, 0.5); /* М'яке світіння */
+    }
+.main-content-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1020; /* Нижче сайдбара (1030), але вище всього іншого */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+    .main-content-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+
+body.sidebar-open {
+    overflow: hidden;
+}
+.navbar, .sidebar-header {
+    background: linear-gradient( 135deg, #F9F295 0%, #E0AA3E 30%, #E0AA3E 45%, #B88A44 70%, #B88A44 100% );
+    background-size: 200% 200%;
+}
+
+
+.product-image-container {
+    transition: transform 0.3s;
+}
+
+    .product-image-container:hover {
+        transform: scale(1.05);
+    }
+
+.card {
+    transition: box-shadow 0.3s;
+}
+
+    .card:hover {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+
+.list-group-item.active {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.sticky-top {
+    z-index: 10;
+}
+
+.list-group-item.active {
+    background-color: #dc3545; /* Червоний */
+}
+
+.form-check-input:checked {
+    background-color: #dc3545; /* Червоний колір Bootstrap */
+    border-color: #dc3545;
+}
+
+/* Колір при наведенні */
+.form-check-input:not(:disabled):not(:checked):hover {
+    border-color: #dc3545;
+}
+
+/* Колір фокусу */
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+}

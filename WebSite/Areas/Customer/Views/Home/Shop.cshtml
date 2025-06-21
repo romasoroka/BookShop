@@ -1,0 +1,201 @@
+﻿@using WebSite.Models.ViewModels
+@model ProductListVM
+
+<div class="row mb-4 mt-4">
+    <!-- Фільтри зліва -->
+    <div class="col-lg-3 col-md-4 mb-4">
+        <form method="get" asp-action="Shop"
+              class="card shadow-sm border-0 p-3 sticky-top"
+              style="top: 20px; max-height: calc(100vh - 40px); overflow-y: auto;">
+            <h5 class="mb-3 d-flex align-items-center">
+                <i class="bi bi-funnel-fill me-2 text-primary"></i>
+                Фільтри
+            </h5>
+
+            <div class="list-group-item border-0">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="categoryId" id="allCategories"
+                           value="" @(ViewBag.SelectedCategoryId == null ? "checked" : "")>
+                    <label class="form-check-label w-100" for="allCategories">
+                        <i class="bi bi-bookmark-check me-2"></i>
+                        Всі категорії
+                       
+                    </label>
+                </div>
+            </div>
+
+            @foreach (var category in Model.Categories)
+            {
+                <div class="list-group-item border-0">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="categoryId"
+                               id="category_@category.Id" value="@category.Id"
+                        @(ViewBag.SelectedCategoryId == category.Id ? "checked" : "")>
+                        <label class="form-check-label w-100" for="category_@category.Id">
+                            <i class="bi bi-bookmark-check me-2"></i>
+                            @category.Name
+                           
+                        </label>
+                    </div>
+                </div>
+            }
+
+            <!-- Фільтр по віковій групі -->
+            <div class="mb-4">
+                <h6 class="border-bottom pb-2">Вікова група</h6>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="forKids" id="forKids" value="true" @(ViewBag.ForKids == true ? "checked" : "")>
+                    <label class="form-check-label" for="forKids">
+                        Для дітей
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="forAdults" id="forAdults" value="true" @(ViewBag.ForAdults == true ? "checked" : "")>
+                    <label class="form-check-label" for="forAdults">
+                        Для дорослих
+                    </label>
+                </div>
+            </div>
+
+
+
+            <!-- Фільтр по статусу -->
+            <div class="mb-4">
+                <h6 class="border-bottom pb-2">Статус</h6>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="bestsellers" id="bestsellers" value="true" @(ViewBag.Bestsellers == true ? "checked" : "")>
+                    <label class="form-check-label" for="bestsellers">
+                        Хіти продажів
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="discounted" id="discounted" value="true" @(ViewBag.Discounted == true ? "checked" : "")>
+                    <label class="form-check-label" for="discounted">
+                        Товари зі знижкою
+                    </label>
+                </div>
+            </div>
+
+            <!-- Кнопка застосування фільтрів -->
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-filter-circle me-2"></i>Застосувати
+            </button>
+        </form>
+    </div>
+
+    <!-- Основной контент справа -->
+    <div class="col-lg-9 col-md-8">
+        <!-- Заголовок и сортировка -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="border-bottom pb-2 d-flex align-items-center" style="color: #212529;">
+                <i class="bi bi-shop-window me-2 text-primary fs-3"></i>
+                <span class="fw-bold">Магазин</span>
+                <small class="text-muted ms-2">(@Model.Products.Count() товарів)</small>
+            </h1>
+
+        </div>
+
+        <div class="mb-4">
+            <form method="get" asp-action="Shop" class="d-flex" role="search">
+                <input class="form-control me-2"
+                       type="search"
+                       name="searchQuery"
+                       placeholder="Пошук товару за назвою"
+                       aria-label="Search"
+                       value="@(ViewBag.SearchQuery ?? "")" />
+                <button class="btn btn-outline-primary" type="submit">Пошук</button>
+
+                <!-- Щоб при пошуку не скидались фільтри, додаємо їх як приховані поля -->
+                <input type="hidden" name="categoryId" value="@(ViewBag.SelectedCategoryId ?? "")" />
+                <input type="hidden" name="forKids" value="@(ViewBag.ForKids ?? "")" />
+                <input type="hidden" name="forAdults" value="@(ViewBag.ForAdults ?? "")" />
+                <input type="hidden" name="bestsellers" value="@(ViewBag.Bestsellers ?? "")" />
+                <input type="hidden" name="discounted" value="@(ViewBag.Discounted ?? "")" />
+            </form>
+        </div>
+
+        <!-- Карточки товаров -->
+        <div class="row">
+            @foreach (var product in Model.Products)
+            {
+                <div class="col-lg-4 col-md-6 col-6 mb-4">
+                    <div class="card h-100 shadow-sm border-0">
+                        <!-- Бейдж знижки -->
+                        @if (product.Discount != 0)
+                        {
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <span class="badge bg-danger">-@product.Discount%</span>
+                            </div>
+                        }
+                        @if (product.IsBestSeller)
+                        {
+                            <div class="position-absolute top-0 end-0 m-2 badge bg-warning text-dark" data-bs-toggle="tooltip" title="Bestseller">
+                                <i class="bi bi-trophy-fill"></i>
+                            </div>
+                        }
+
+                        <div class="product-image-container" style="height: 250px; overflow: hidden;">
+                            @if (product.Images != null && product.Images.Any())
+                            {
+                                <img src="@product.Images.First().ImageUrl" class="card-img-top p-3 w-100 h-100" alt="@product.Title" style="object-fit: contain;">
+                            }
+                            else
+                            {
+                                <img src="https://via.placeholder.com/300x300" class="card-img-top p-3 w-100 h-100" alt="Placeholder" style="object-fit: contain;">
+                            }
+                        </div>
+
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="card-title mb-0 fs-6">@product.Title</h6>
+                              
+                            </div>
+                            <p class="text-muted small">@product.Author</p>
+                        </div>
+
+                        <!-- Футер карточки -->
+                        <div class="card-footer bg-transparent border-0">
+                            <!-- Цена -->
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                @if (product.Discount > 0)
+                                {
+                                    <div>
+                                        <span class="text-decoration-line-through text-muted small">
+                                            @product.Price.ToString("C", new System.Globalization.CultureInfo("pl-PL"))
+                                        </span>
+                                        <span class="fw-bold ms-2" style="color: #BC430D">
+                                            @((product.Price * (1 - product.Discount / 100)).ToString("C", new System.Globalization.CultureInfo("pl-PL")))
+                                        </span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span class="fw-bold" style="color: #BC430D">
+                                        @product.Price.ToString("C", new System.Globalization.CultureInfo("pl-PL"))
+                                    </span>
+                                }
+                            </div>
+                            @if (product.IsAvailable)
+                            {
+                                <a asp-action="Details" asp-route-productId="@product.Id"
+                                   class="btn btn-outline-primary w-100 fs-6">
+                                    Детальніше
+                                </a>
+                            }
+                            else
+                            {
+                                <a class="btn btn-secondary w-100 text-white fs-6">
+                                    Немає в наявності
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+
+   

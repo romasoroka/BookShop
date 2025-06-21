@@ -4,6 +4,46 @@
 }
 <ul class="nav nav-pills flex-column">
     <li class="nav-item"><a class="nav-link @ManageNavPages.IndexNavClass(ViewContext)" id="profile" asp-page="./Index">Профіль</a></li>
+    <li class="nav-item"><a class="nav-link @ManageNavPages.EmailNavClass(ViewContext)" id="email" asp-page="./Email">Email</a></li>
     <li class="nav-item"><a class="nav-link @ManageNavPages.ChangePasswordNavClass(ViewContext)" id="change-password" asp-page="./ChangePassword">Пароль</a></li>
-    <li class="nav-item"><a class="nav-link @ManageNavPages.PersonalDataNavClass(ViewContext)" id="personal-data" asp-page="./PersonalData">Видалити профіль</a></li>
+@*     @if (hasExternalLogins)
+    {
+        <li id="external-logins" class="nav-item"><a id="external-login" class="nav-link @ManageNavPages.ExternalLoginsNavClass(ViewContext)" asp-page="./ExternalLogins">External logins</a></li>
+    }
+    <li class="nav-item"><a class="nav-link @ManageNavPages.TwoFactorAuthenticationNavClass(ViewContext)" id="two-factor" asp-page="./TwoFactorAuthentication">Two-factor authentication</a></li> *@
+    <li class="nav-item"><a class="nav-link @ManageNavPages.PersonalDataNavClass(ViewContext)" id="personal-data" asp-page="./PersonalData">Персональні дані</a></li>
 </ul>
+
+
+<style>
+    /* Основний стиль для неактивних пунктів */
+    .nav-pills .nav-link {
+        color: #495057; /* Колір тексту */
+        background-color: #f8f9fa; /* Фон неактивних пунктів */
+        margin-bottom: 0.25rem;
+        transition: all 0.3s ease;
+    }
+
+        /* Стиль при наведенні */
+        .nav-pills .nav-link:hover {
+            color: #fff;
+            background-color: #dc3545; /* Червоний при наведенні */
+        }
+
+        /* Стиль для активного пункту */
+        .nav-pills .nav-link.active {
+            background-color: #dc3545; /* Червоний для активного пункту */
+            color: white;
+            font-weight: 500;
+        }
+
+        /* Стиль для фокусу (доступність) */
+        .nav-pills .nav-link:focus {
+            box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25); /* Червона тінь при фокусі */
+        }
+
+        /* Додатковий стиль для іконок (якщо додасте) */
+        .nav-pills .nav-link i {
+            margin-right: 0.5rem;
+        }
+</style>

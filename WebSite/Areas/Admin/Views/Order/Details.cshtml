@@ -3,18 +3,18 @@
 <div class="container py-5">
     <div class="card shadow">
         <div class="card-header bg-primary text-white">
-            <h2 class="mb-0">Order Details #@Model.Id</h2>
+            <h2 class="mb-0">Деталі замовлення #@Model.Id</h2>
         </div>
 
         <div class="card-body">
             <div class="row mb-4">
                 <div class="col-md-6">
-                    <h4 class="text-dark">Order Information</h4>
+                    <h4 class="text-dark">Інформація про замовлення</h4>
                     <dl class="row">
-                        <dt class="col-sm-4">Order Date:</dt>
+                        <dt class="col-sm-4">Дата замовлення:</dt>
                         <dd class="col-sm-8">@Model.OrderDate.ToString("f")</dd>
 
-                        <dt class="col-sm-4">Status:</dt>
+                        <dt class="col-sm-4">Статус:</dt>
                         <dd class="col-sm-8">
                             <span class="badge @GetStatusBadgeClass(Model.Status)">
                                 @Model.Status
@@ -22,7 +22,7 @@
                         </dd>
 
                         <dt class="col-sm-4">Total Amount:</dt>
-                        <dd class="col-sm-8">@Model.TotalPrice.ToString()₴</dd>
+                        <dd class="col-sm-8">@Model.TotalPrice.ToString("C", new System.Globalization.CultureInfo("pl-PL"))</dd>
                     </dl>
                 </div>
 
@@ -40,7 +40,7 @@
 
             <div class="row mb-4">
                 <div class="col-12">
-                    <h4 class="text-dark">Shipping Information</h4>
+                    <h4 class="text-dark">Доставка</h4>
                     <address>
                         @Model.ShippingAddress<br>
                         @Model.ShippingCity, @Model.ShippingPostalCode
@@ -50,36 +50,24 @@
 
             <div class="row mb-4">
                 <div class="col-12">
-                    <h4 class="text-dark">Payment Information</h4>
+                    <h4 class="text-dark">Інформація про платіж</h4>
                     @if (Model.Payment != null)
                     {
                         <dl class="row">
-                            <dt class="col-sm-3">Payment Method:</dt>
+                            <dt class="col-sm-3">Метод оплати:</dt>
                             <dd class="col-sm-9">@Model.Payment.PaymentMethod</dd>
-
-                            <dt class="col-sm-3">Payment Date:</dt>
-                            <dd class="col-sm-9">@Model.Payment.PaymentDate.ToString("f")</dd>
-
-                            @if (Model.Payment.PaymentMethod == "Card")
-                            {
-                                <dt class="col-sm-3">Card Number:</dt>
-                                <dd class="col-sm-9">@Model.Payment.CardNumber</dd>
-
-                                <dt class="col-sm-3">Card Holder:</dt>
-                                <dd class="col-sm-9">@Model.Payment.CardHolderName</dd>
-                            }
                         </dl>
                     }
                     else
                     {
-                        <p>No payment information available.</p>
+                        <p>Немає доступних методів оплати.</p>
                     }
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-12">
-                    <h4 class="text-dark">Order Items</h4>
+                    <h4 class="text-dark">Товари в замовленні</h4>
                     <table class="table table-bordered">
                         <thead class="bg-dark">
                             <tr>
@@ -96,14 +84,14 @@
                                     <td>@item.Product.Title</td>
                                     <td>@item.Price.ToString()₴</td>
                                     <td>@item.Quantity</td>
-                                    <td>@((item.Price * item.Quantity).ToString())₴</td>
+                                    <td>@((item.Price * item.Quantity).ToString("C", new System.Globalization.CultureInfo("pl-PL")))</td>
                                 </tr>
                             }
                         </tbody>
                         <tfoot>
                             <tr>
                                 <td colspan="3" class="text-right font-weight-bold">Total:</td>
-                                <td class="font-weight-bold">@Model.TotalPrice.ToString()₴</td>
+                                <td class="font-weight-bold">@Model.TotalPrice.ToString("C", new System.Globalization.CultureInfo("pl-PL"))</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -112,7 +100,7 @@
 
             <div class="row mt-4">
                 <div class="col-12 text-right">
-                    <a asp-action="Index" class="btn btn-secondary">Back to Orders</a>
+                    <a asp-action="Index" class="btn btn-secondary">Назад до оформлення</a>
                 </div>
             </div>
         </div>

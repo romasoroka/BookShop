@@ -29,7 +29,12 @@ function loadDataTable() {
                 "data": "totalPrice",
                 "width": "15%",
                 "render": function (data) {
-                    return '$' + parseFloat(data).toFixed(2);
+                    return parseFloat(data).toLocaleString('pl-PL', {
+                        style: 'currency',
+                        currency: 'PLN',
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
                 }
             },
             {

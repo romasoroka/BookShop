@@ -9,9 +9,7 @@
         <li class="nav-item dropdown position-relative">
             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="bi bi-person-circle fs-4"></i>
-                <span class="d-none d-lg-inline ms-1">
-@*                     @((await UserManager.GetUserAsync(User))?.Name)
- *@                </span>
+                
             </a>
             <ul class="dropdown-menu bg-light  dropdown-menu-end position-absolute" aria-labelledby="userDropdown" style="z-index: 1050;">
                 <li>
@@ -35,7 +33,6 @@
         <li class="nav-item dropdown position-relative">
             <a class="nav-link dropdown-toggle" href="#" id="authDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="bi bi-person fs-4"></i>
-                <span class="d-none d-lg-inline ms-1">Акаунт</span>
             </a>
             <ul class="dropdown-menu bg-light dropdown-menu-end position-absolute" aria-labelledby="authDropdown" style="z-index: 1050;">
                 <li>
@@ -53,3 +50,39 @@
     }
 </ul>
 
+
+<style>
+    /* Стилі для випадаючого меню */
+    .dropdown-item:hover,
+    .dropdown-item:focus {
+        background-color: #dc3545 !important; /* Червоний колір при наведенні */
+        color: white !important;
+    }
+
+    .dropdown-item.active,
+    .dropdown-item:active {
+        background-color: #dc3545 !important; /* Червоний колір при активному стані */
+        color: white !important;
+    }
+
+    /* Стилі для кнопки виходу у формі */
+    #logoutForm .dropdown-item:hover,
+    #logoutForm .dropdown-item:focus {
+        background-color: #dc3545 !important;
+        color: white !important;
+    }
+
+    /* Стилі для основного посилання в навігації */
+    .nav-link:hover,
+    .nav-link:focus {
+        color: #dc3545 !important; /* Червоний колір при наведенні */
+    }
+
+    /* Стилі для іконок */
+    .dropdown-item:hover i,
+    .dropdown-item:focus i,
+    .dropdown-item.active i,
+    .dropdown-item:active i {
+        color: white !important;
+    }
+</style>

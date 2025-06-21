@@ -1,36 +1,216 @@
 ﻿@model IEnumerable<Product>
+@using Newtonsoft.Json
 
-<div class="row pb-3">
-	@foreach(var product in Model)
-		{
-			<div class="col-lg-3 col-sm-6">
-				<div class="row p-2"> 
-					<div class="col-12 p-1">
-						<div class="card border-0 p-3 shadow border-top border-5 rounded">
-@* 							<img src="@product.ImageURL" class="card-img-top rounded" />
- *@							<div class="card-body pb-0">
-								<div class="pl-1">
-									<p class="card-title h-5 text-dark opacity-75 text-uppercase text-center">@product.Title</p>
-								<p class="card-title text-center" style="color: #BC430D">@product.Author</p>
-								</div>
-								<div class="pl-1">
-									<p class="text-dark opacity-75 text-center mb-0">
-										Price:<span>
-										@product.Price.ToString("C", new System.Globalization.CultureInfo("pl-PL"))
-									</span>
-								</p>
-								</div>
-							</div>
-							<div>
-								<a asp-action="Details" asp-route-productId ="@product.Id" class="btn btn-primary border-0 form-control mt-2">
-									Details
-								</a>
-							</div>
+<div class="container-fluid">
+    <!-- Hero Section -->
+    <div class="row py-4 bg-light mb-4 mt-3">
+        <div class="col-md-12 text-center">
+            <h1 class="display-4 fw-bold d-none d-sm-block" style="color: #BC430D">Книги українською в Польщі</h1>
+                <div class="bg-light p-4 rounded shadow-sm text-start">
+                    <h3 class="mb-1 text-primary d-flex align-items-center">
+                        <img src="~/favicon.png" alt="Logo" width="35" height="35" class="me-2" />
+                        RidneShop.pl
+                    </h3>
+                <div class="ms-5 text-primary d-block d-sm-none" style="font-size: 1.1rem; font-weight: 500; line-height: 1.5;">
+                    <span class="d-block">Перевірене джерело</span>
+                    <span class="d-block">Літератури</span>
+                    <span class="d-block">Для дітей та дорослих</span>
+                </div>
 
-						</div>
-					</div>
-				</div>
+                    <ul class="fs-5 ps-3 d-none d-sm-block">
+                        <li class="mb-2"><strong>Українські книги</strong> з доставкою по всій Польщі</li>
+                        <li class="mb-2"><strong>Казки, розвиваючі книжки та інтерактивні планшети для малюків, а також книги для дорослих — про саморозвиток, мотивацію та кохання.</strong></li>
+                        <li class="mb-2"><strong>Швидке оформлення замовлень</strong> і постійне оновлення асортименту</li>
+                    </ul>
+                </div>
 
-			</div>
-		}
+
+
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="border-bottom pb-2" style="color: #212529">
+                <i class="bi bi-star-fill me-2 text-warning"></i> Хіти продажу
+            </h2>
+
+        </div>
+
+        @foreach (var product in Model.Where(p => p.IsBestSeller).Take(16))
+        {
+            <div class="col-lg-3 col-md-4 col-6 mb-4">
+                <div class="card h-100 shadow-sm border-0">
+                    @if(product.Discount != 0)
+                    {
+                        <div class="position-absolute top-0 start-0 m-2">
+                            <span class="badge bg-danger">Save @product.Discount%</span>
+                        </div>
+                    }
+                    @if (product.Images != null && product.Images.Any())
+                    {
+                        <img src="@product.Images.First().ImageUrl" class="card-img-top p-3 zoom-effect" alt="@product.Title" style="height: 250px; object-fit: contain;">
+                    }
+                    else
+                    {
+                        <img src="https://via.placeholder.com/600x600" class="card-img-top p-3" alt="Placeholder" style="height: 250px; object-fit: contain;">
+                    }
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="card-title mb-0 fs-6">@product.Title</h6>
+                            @if (product.IsBestSeller)
+                            {
+                                <div class="position-absolute top-0 end-0 m-2 badge bg-warning text-dark" data-bs-toggle="tooltip" title="Bestseller">
+                                    <i class="bi bi-trophy-fill"></i>
+                                </div>
+                            }
+                        </div>
+                        <p class="text-muted small">@product.Author</p>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                           
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            @if (product.Discount > 0)
+                            {
+                                <div>
+                                    <span class="text-decoration-line-through text-muted small ms-2">
+                                        @((product.Price).ToString("C", new System.Globalization.CultureInfo("pl-PL")))
+                                    </span>
+                                </div>
+                                <span class="fw-bold" style="color: #BC430D">
+                                    @((product.Price * (1 - product.Discount / 100)).ToString("C", new System.Globalization.CultureInfo("pl-PL")))
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="fw-bold" style="color: #BC430D">
+                                    @product.Price.ToString("C", new System.Globalization.CultureInfo("pl-PL"))
+                                </span>
+                            }
+                        </div>
+                        @if (product.IsAvailable)
+                        {
+                            <a asp-action="Details" asp-route-productId="@product.Id"
+                               class="btn btn-outline-primary w-100 fs-6">
+                                Детальніше
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-secondary w-100 text-white fs-6">
+                                Немає в наявності
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="d-flex justify-content-end">
+            <a class="badge bg-danger text-decoration-none fs-5 py-2" asp-area="Customer" asp-controller="Home" asp-action="Shop">Перейти до магазину</a>
+        </div>
+
+    </div>
+
+
+    <!-- Discounted Items Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="border-bottom pb-2" style="color: #212529">
+                <i class="bi bi-percent text-danger"></i> Найкращі пропозиції
+            </h2>
+        </div>
+
+        @foreach (var product in Model.Where(p => p.Discount > 0).OrderByDescending(p => p.Discount).Take(16))
+        {
+            <div class="col-lg-3 col-md-4 col-6 mb-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="position-absolute top-0 start-0 m-2">
+                        <span class="badge bg-danger">Save @product.Discount%</span>
+                    </div>
+                    @if (product.Images != null && product.Images.Any())
+                    {
+                        <img src="@product.Images.First().ImageUrl" class="card-img-top p-3 zoom-effect" alt="@product.Title" style="height: 250px; object-fit: contain;">
+                    }
+                    else
+                    {
+                        <img src="https://via.placeholder.com/600x600" class="card-img-top p-3" alt="Placeholder" style="height: 250px; object-fit: contain;">
+                    }
+                    @if (product.IsBestSeller)
+                    {
+                        <div class="position-absolute top-0 end-0 m-2 badge bg-warning text-dark" data-bs-toggle="tooltip" title="Bestseller">
+                            <i class="bi bi-trophy-fill"></i>
+                        </div>
+                    }
+
+                    <div class="card-body">
+                        <h6 class="card-title fs-6">@product.Title</h6>
+                        <p class="text-muted small">@product.Author</p>
+
+                       
+                    </div>
+                    <div class="card-footer bg-transparent border-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-decoration-line-through text-muted small ms-2">
+                                    @((product.Price).ToString("C", new System.Globalization.CultureInfo("pl-PL")))
+                                </span>
+                            </div>
+                            <span class="fw-bold" style="color: #BC430D">
+                                @((product.Price * (1 - product.Discount / 100)).ToString("C", new System.Globalization.CultureInfo("pl-PL")))
+                            </span>
+                        </div>
+                        @if (product.IsAvailable)
+                        {
+                            <a asp-action="Details" asp-route-productId="@product.Id"
+                               class="btn btn-primary w-100 text-white fs-6">
+                                Отримати
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-secondary w-100 text-white fs-6">
+                                Немає в наявності </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="d-flex justify-content-end">
+            <a class="badge bg-danger text-decoration-none fs-5 py-2" asp-area="Customer" asp-controller="Home" asp-action="Shop">Перейти до магазину</a>
+        </div>
+    </div>
+
 </div>
+
+<partial name="_Footer" />
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function() {
+    @if (TempData["OrderSuccess"] != null)
+    {
+        var alertData = JsonConvert.DeserializeObject<dynamic>(TempData["OrderSuccess"].ToString());
+        <text>
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                title: '@Html.Raw(alertData.Title.ToString().Replace("'", "\\'"))',
+                                html: `<p>Номер вашого замовлення: <b>#@alertData.OrderNumber</b></p><p>@Html.Raw(alertData.Message.ToString().Replace("'", "\\'"))</p>`,
+                                icon: 'success',
+                                confirmButtonText: 'OK',
+                                position: 'center',
+                                timer: 5000,
+                                backdrop: true,
+                                allowOutsideClick: false
+                            });
+                        } else {
+                            console.error('SweetAlert2 is not loaded');
+                            alert('@Html.Raw(alertData.Title)\nНомер замовлення: #@alertData.OrderNumber\n@Html.Raw(alertData.Message)');
+                        }
+        </text>
+    }
+    });
+</script>

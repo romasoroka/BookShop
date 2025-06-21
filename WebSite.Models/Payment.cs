@@ -20,8 +20,6 @@ namespace WebSite.Models
         [ForeignKey("UserId")]
         public ApplicationUser User { get; set; }
 
-        [Required]
-        public DateTime PaymentDate { get; set; } = DateTime.Now;
 
         [Required]
         [Range(0.01, 100000)]
@@ -31,18 +29,6 @@ namespace WebSite.Models
         [MaxLength(50)]
         public string PaymentMethod { get; set; } // "Card", "CashOnDelivery"
 
-        // Додаткові поля для оплати карткою
-        [MaxLength(20)]
-        public string? CardNumber { get; set; }
-
-        [MaxLength(50)]
-        public string? CardHolderName { get; set; }
-
-        [MaxLength(5)]
-        public string? CardExpiry { get; set; }
-
-        [MaxLength(4)]
-        public string? CardCvv { get; set; }
 
         // Зв'язок із замовленням
         public int? OrderId { get; set; }

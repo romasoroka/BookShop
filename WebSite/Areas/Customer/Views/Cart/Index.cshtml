@@ -2,73 +2,162 @@
 @model ShoppingCartVM
 
 <form method="post">
-    <br />
-    <div class="card shadow border-0">
-        <div class="card-header bg-dark text-light ml-0 py-4">
-            <div class="row px-4">
-                <div class="col-6">
-                    <h5 class="pt-2 text-white">
-                        Shopping Cart
-                    </h5>
+    <div class="container py-5">
+        <div class="card shadow border-0 rounded-4 overflow-hidden">
+            <!-- Card Header -->
+            <div class="card-header bg-dark bg-gradient text-light py-4">
+                <div class="row align-items-center">
+                    <div class="col-8">
+                        <h2 class="fw-bold mb-0">
+                            <i class="bi bi-cart3 me-2"></i>Кошик
+                        </h2>
+                    </div>
+                    <div class="col-4 text-end">
+                        <span class="badge bg-primary fs-6">
+                            @if (Model.ShoppingCartList.Any())
+                            {
+                                <span>@Model.ShoppingCartList.Count() @(Model.ShoppingCartList.Count() == 1 ? "товар" : "товари")</span>
+                            }
+                            else
+                            {
+                                <span>Кошик пустий :(</span>
+                            }
+                        </span>
+                    </div>
                 </div>
-
             </div>
-        </div>
-        <div class="card-body my-4">
-            <div class="row">
-            </div>
-            <div class="row mb-3 pb-3">
-                
-                <div class="col-md-10 offset-md-1">
 
-                    @foreach(var item in Model.ShoppingCartList){
-                        <div class="row border-bottom pb-3">
-                           @*  <div class="d-none d-lg-block col-lg-1 text-center py-2">
-                                <img src="@item.Product.ImageURL" class="rounded" width="100%" />
-                            </div> *@
-                            <div class="col-12 col-lg-6 pt-md-3">
-                                <h5 class="text-uppercase text-secondary"><strong>@item.Product.Title</strong></h5>
-                                <p><small>@Html.Raw(item.Product.Description)</small></p>
-                            </div>
-                            <div class="col-12  col-lg-5 text-center row">
-                                <div class="col-3 text-md-right pt-2 pt-md-4">
-                                    <h6 class="fw-semibold text-dark">
-                                        @item.Product.Price.ToString("C", new System.Globalization.CultureInfo("en-US"))
-                                        <span class="text-dark">&nbsp;x&nbsp;</span>@item.Count
-                                    </h6>
+            <!-- Card Body -->
+            <div class="card-body p-4">
+                <div class="row g-4">
+                    <!-- Cart Items -->
+                    <div class="col-12">
+                        @foreach (var item in Model.ShoppingCartList)
+                        {
+                            <div class="row align-items-center border-bottom pb-4 mb-4 g-3">
+                                <!-- Product Image -->
+                                <div class="col-md-2 text-center">
+                                    @if (item.Product.Images != null && item.Product.Images.Any())
+                                    {
+                                        var firstImage = item.Product.Images.FirstOrDefault();
+                                        if (firstImage != null && !string.IsNullOrEmpty(firstImage.ImageUrl))
+                                        {
+                                            <img src="@firstImage.ImageUrl" class="img-fluid rounded-3 shadow" alt="@item.Product.Title" style="max-height: 120px;">
+                                        }
+                                        else
+                                        {
+                                            <div class="bg-light rounded-3 d-flex align-items-center justify-content-center" style="height: 120px; width: 100%;">
+                                                <i class="bi bi-book text-muted fs-1"></i>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="bg-light rounded-3 d-flex align-items-center justify-content-center" style="height: 120px; width: 100%;">
+                                            <i class="bi bi-book text-muted fs-1"></i>
+                                        </div>
+                                    }
                                 </div>
-                               
-                                <div class="col-3 col-sm-4 col-lg-2 offset-lg-1 text-right pt-2">
-                                    <a href="#" class="btn btn-danger bg-gradient py-2 ">
-                                        <i class="bi bi-trash-fill"></i>
+
+                                <!-- Product Info -->
+                                <div class="col-md-5">
+                                    <h4 class="text-dark fw-bold mb-2">@item.Product.Title</h4>
+                                    <p class="text-muted mb-2 small">@Html.Raw(item.Product.Description)</p>
+                                    @if (item.Product.IsBestSeller)
+                                    {
+                                        <span class="badge bg-danger mb-2">Хіт продажу</span>
+                                    }
+                                </div>
+
+                                <!-- Price and Quantity -->
+                                <div class="col-md-3 text-center">
+                                    <div class="d-flex flex-column">
+                                        <h5 class="text-primary fw-bold mb-2">
+                                            @item.Product.Price.ToString("C", new System.Globalization.CultureInfo("pl-PL"))
+                                        </h5>
+                                        <div class="text-center">
+                                            <span class="fw-bold">Кількість: @item.Count</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2 text-center">
+                                    <a onclick="deleteCartItem('@Url.Action("Delete", "Cart", new { area = "Customer", id = item.Id })')"
+                                       class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-trash-fill"></i> Видалити
                                     </a>
                                 </div>
                             </div>
-
-                        </div>
-                    }
-
+                        }
+                    </div>
                 </div>
             </div>
-            <div class="card-footer bg-white border-0">
-                <div class="row">
-                    <div class="col-md-4 offset-md-4">
-                        <ul class="list-group mb-4">
-                            <li class="d-flex justify-content-between align-items-center">
-                                <h5 class="text-dark fw-semibold text-uppercase"> Total (USD)</h5>
-                                <h4 class="text-dark fw-bolder">@Model.OrderTotal.ToString("C", new System.Globalization.CultureInfo("en-US"))</h4>
-                            </li>
-                        </ul>
+
+            <!-- Card Footer -->
+            <div class="card-footer bg-light border-0 py-4">
+                <div class="row justify-content-center">
+                    <div class="col-lg-5">
+                        <div class="card border-0 shadow-sm rounded-4">
+                            <div class="card-body p-4">
+                                <h4 class="fw-bold text-dark mb-4">Загальний рахунок</h4>
+                               
+                                <hr>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <span class="text-dark fw-bold fs-5">Сума</span>
+                                    <span class="text-dark fw-bold fs-5">@Model.OrderTotal.ToString("C", new System.Globalization.CultureInfo("pl-PL"))</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="row justify-content-center">
+
+                <div class="row justify-content-center mt-4 g-3">
+                    @if (Model.ShoppingCartList.Any()){
+                        <div class="col-auto">
+                            <a asp-area="Customer" asp-controller="Payment" asp-action="Index"
+                               class="btn btn-primary btn-lg px-5 py-3 rounded-3 fw-bold">
+                                <i class="bi bi-credit-card me-2"></i>Замовити
+                            </a>
+                        </div>
+                    }
                     <div class="col-auto">
-                        <a asp-area="Customer" asp-controller="Payment" asp-action="Index" class="btn btn-primary text-uppercase ">Buy</a>
-                    </div>
-                    <div class="col-auto">
-                        <a asp-area="Customer" asp-controller="Home" asp-action="Index" class="btn btn-outline-primary text-uppercase btn-sm"><small>Continue Shopping</small></a>
+                        <a asp-area="Customer" asp-controller="Home" asp-action="Index"
+                           class="btn btn-outline-primary btn-lg px-5 py-3 rounded-3 fw-bold">
+                            <i class="bi bi-arrow-left me-2"></i>Продовжити покупки
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 </form>
+<script src="~/js/cart.js" asp-append-version="true"></script>
+
+    <style>
+        .card {
+            border: none;
+            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            border-bottom: none;
+        }
+
+        .input-group {
+            max-width: 150px;
+        }
+
+        .quantity-input {
+            width: 50px;
+            text-align: center;
+        }
+
+        .product-img {
+            max-height: 150px;
+            object-fit: contain;
+        }
+
+        .order-summary-card {
+            background-color: #f8f9fa;
+        }
+    </style>

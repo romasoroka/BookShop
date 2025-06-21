@@ -3,7 +3,10 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - WebSite</title>
+    <title>@ViewData["Title"] RidneShop</title>
+    <link rel="icon" type="image/png" href="~/favicon.ico" asp-append-version="true" />
+    <meta name="description" content="RidneShop — інтернет-магазин з продажу українських книжок у Польщі. Купуйте якісні продукти онлайн!" />
+    <meta name="keywords" content="RidneShop, RidneShop.pl, Ridne.pl, Купити книжки українською в польщі, Українські книжки в Польщі, Рідне, Магазин українських книжок в Польщі, купити дешево українські книжки в Польщі, магазин українських книжок, українська література, дитячі книжки українською, купити українські книги дешево" />
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/my.css" />
     <link rel="stylesheet" href="~/WebSite.styles.css" asp-append-version="true" />
@@ -16,52 +19,33 @@
 
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand navbar-toggleable navbar-light  border-bottom box-shadow">
-            <div class="container-fluid">
-                <div class="d-flex align-items-center">
-                    <span class="burger-menu-btn me-3" onclick="toggleSidebar()">☰</span>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                            aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                </div>
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Ridne</a>
+   
+    <partial name="_Header" />
 
-                <div class="navbar-collapse collapse justify-content-end align-items-center">
-                    <!-- Корзина окремо -->
-                    <a class="nav-link text-dark me-3" asp-area="Customer" asp-controller="Cart" asp-action="Index">
-                        <i class="bi bi-cart fs-5"></i>
-                    </a>
-
-                    <!-- Логін частина -->
-                    <partial name="_LoginPartial" />
-                </div>
-            </div>
-        </nav>
-    </header>
-
-    <!-- Sidebar -->
     <!-- Sidebar -->
     <div id="mySidebar" class="sidebar">
         <div class="sidebar-header">
-            <span class="navbar-brand">Ridne</span>
+            <span class="navbar-brand text-uppercase">RidneShop.pl</span>
             <a href="javascript:void(0)" class="close-btn" onclick="toggleSidebar()">×</a>
         </div>
         <div class="sidebar-content">
-            <a class="nav-link text-dark" asp-area="Customer" asp-controller="Home" asp-action="Index">Home</a>
-            <a class="nav-link text-dark" asp-area="Customer" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <a class="nav-link text-dark" asp-area="Customer" asp-controller="Home" asp-action="Index">Головна</a>
+            <a class="nav-link text-dark" asp-area="Customer" asp-controller="Home" asp-action="Shop">Магазин</a>
+            <a class="nav-link text-dark" asp-area="Customer" asp-controller="Home" asp-action="About">Про нас</a>
 
-            <div class="dropdown">
-                <a class="nav-link dropdown-toggle text-dark" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                    Managment
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="Category" asp-action="Index">Category</a></li>
-                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="Product" asp-action="Index">Product</a></li>
-                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="Order" asp-action="Index">Order</a></li>
-                </ul>
-            </div>
+            @if (User.IsInRole(SD.Role_Admin))
+            {
+                <div class="dropdown">
+                    <a class="nav-link dropdown-toggle text-dark" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                        Менеджмент (адмін)
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <li><a class="dropdown-item" asp-area="Admin" asp-controller="Category" asp-action="Index">Категорії</a></li>
+                        <li><a class="dropdown-item" asp-area="Admin" asp-controller="Product" asp-action="Index">Товари</a></li>
+                        <li><a class="dropdown-item" asp-area="Admin" asp-controller="Order" asp-action="Index">Замовлення</a></li>
+                    </ul>
+                </div>
+            }
         </div>
     </div>
 
@@ -70,53 +54,14 @@
             <partial name="_Notification" />
             @RenderBody()
         </main>
+
     </div>
+      
     <div class="main-content-overlay" onclick="toggleSidebar()"></div>
 
 
-    <style>
-        .close-btn {
-            color: white; /* Білий колір іконки */
-            font-size: 2rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: transparent !important; /* Важливо: відключає будь-який фон */
-            border: none;
-            padding: 0.5rem;
-        }
-
-            .close-btn:hover {
-                color: #F9F295; /* Світло-золотий при наведенні */
-                transform: scale(1.1); /* Легке збільшення */
-                text-shadow: 0 0 8px rgba(249, 242, 149, 0.5); /* М'яке світіння */
-            }
-        .main-content-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1020; /* Нижче сайдбара (1030), але вище всього іншого */
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-
-            .main-content-overlay.active {
-                opacity: 1;
-                visibility: visible;
-            }
-
-
-        body.sidebar-open {
-            overflow: hidden;
-        }
-        .navbar, .sidebar-header {
-            background: linear-gradient( 135deg, #F9F295 0%, #E0AA3E 30%, #E0AA3E 45%, #B88A44 70%, #B88A44 100% );
-            background-size: 200% 200%;
-        }
-    </style>
+    
+    
     <script src="https://cdn.tiny.cloud/1/dgsj2y3y3a7298erhgwpp6ewazwjzj8nc669vlrpces2orx4/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
@@ -125,6 +70,7 @@
     <script src="//cdn.datatables.net/2.2.1/js/dataTables.min.js" asp-append-version="true"></script>
     <script src="//cdn.datatables.net/2.2.1/js/dataTables.min.js" referrerpolicy="origin"></script>
     <script src="~/js/sidebar.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

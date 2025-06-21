@@ -23,10 +23,13 @@ namespace WebSite.DataAccess.Repository
             {
                 obj.Title = product.Title;
                 obj.Discount = product.Discount;
+                obj.IsAvailable = product.IsAvailable;
                 obj.IsBestSeller = product.IsBestSeller;
+                obj.IsForKids = product.IsForKids;
                 obj.Description = product.Description;
                 obj.Price = product.Price;
                 obj.CategoryId = product.CategoryId;
+                obj.Images = product.Images;
             
             }
         }

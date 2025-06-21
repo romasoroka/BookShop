@@ -21,6 +21,8 @@ namespace WebSite.Models
 
         public bool IsBestSeller { get; set; }
 
+        public bool IsForKids { get; set; }
+
         [Range(0, 100, ErrorMessage = "Discount must be between 0 and 100")]
         public double Discount { get; set; }
         [Required]
@@ -36,5 +38,8 @@ namespace WebSite.Models
 
         [ValidateNever]
         public List<ProductImage> Images { get; set; }
+
+        public bool IsAvailable { get; set; } = true;
+
     }
 }
