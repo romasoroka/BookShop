@@ -157,7 +157,6 @@ namespace WebSite.Areas.Admin.Controllers
             return Json(new { success = true, message = "Order deleted successfully!" });
         }
 
-        // Додатковий метод для перегляду деталей замовлення
         public IActionResult Details(int id)
         {
             Order order = _unitOfWork.Order.Get(
