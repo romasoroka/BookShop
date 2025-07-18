@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Azure.Storage.Blobs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Cryptography;
@@ -17,7 +18,13 @@ namespace WebSite.Areas.Admin.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public ProductController(IUnitOfWork db, IWebHostEnvironment webHostEnvironment) { _unitOfWork = db; _webHostEnvironment = webHostEnvironment; }
+        private readonly BlobContainerClient _blobContainerClient;
+
+        public ProductController(IUnitOfWork db, IWebHostEnvironment webHostEnvironment, BlobContainerClient blobContainerClient) 
+        { 
+            _unitOfWork = db; 
+            _webHostEnvironment = webHostEnvironment; 
+            _blobContainerClient = blobContainerClient; }
         public IActionResult Index()
         {
             var products = _unitOfWork.Product.GetAll(includeProp: "Category").ToList();
@@ -39,7 +46,7 @@ namespace WebSite.Areas.Admin.Controllers
             return View(productVM);
         }
         [HttpPost]
-        public IActionResult Upsert(ProductVM obj, List<IFormFile> files)
+        public async Task<IActionResult> UpsertAsync(ProductVM obj, List<IFormFile> files)
         {
             ModelState.Remove("CategoryList");
             if (ModelState.IsValid)
@@ -60,24 +67,28 @@ namespace WebSite.Areas.Admin.Controllers
                 foreach (var file in files)
                 {
                     string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    string path = @"images\products\product-" + obj.Product.Id;
-                    string finalPath = Path.Combine(wwwRootPath, path);
-                    if (!Directory.Exists(finalPath))
+                    string blobPath = $"products/product-{obj.Product.Id}/{fileName}";
+
+                    using (var stream = file.OpenReadStream())
                     {
-                        Directory.CreateDirectory(finalPath);
+                        var blobClient = _blobContainerClient.GetBlobClient(blobPath);
+                        await blobClient.UploadAsync(stream, overwrite: true);
+
+                        var blobUrl = blobClient.Uri.ToString();
+
+                        ProductImage productImage = new ProductImage()
+                        {
+                            ImageUrl = blobUrl,
+                            ProductId = obj.Product.Id
+                        };
+
+                        if (obj.Product.Images == null)
+                            obj.Product.Images = new List<ProductImage>();
+
+                        obj.Product.Images.Add(productImage);
+                        _unitOfWork.ProductImage.Add(productImage);
                     }
-                    using (var fileStream = new FileStream(Path.Combine(finalPath, fileName), FileMode.Create))
-                    {
-                        file.CopyTo(fileStream);
-                    }
-                    ProductImage productImage = new ProductImage() { ImageUrl=@"\"+path+@"\"+fileName, ProductId=obj.Product.Id};
-                    if (obj.Product.Images == null)
-                    {
-                        obj.Product.Images = new List<ProductImage>();
-                    }
-                    obj.Product.Images.Add(productImage);
-                    _unitOfWork.ProductImage.Add(productImage);
-                    
+
                 }
 
                 _unitOfWork.Product.Update(obj.Product);
@@ -96,26 +107,26 @@ namespace WebSite.Areas.Admin.Controllers
             }
         }
 
-        public IActionResult DeleteImage(int imageId)
+        public async Task<IActionResult> DeleteImage(int imageId)
         {
             var imageToDelete = _unitOfWork.ProductImage.Get(u => u.Id == imageId);
-            int productId = imageToDelete.ProductId;
-            if(imageToDelete != null)
-            {
-                if(!string.IsNullOrEmpty(imageToDelete.ImageUrl))
-                {
-                    var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, imageToDelete.ImageUrl.TrimStart('\\'));
-                    if (System.IO.File.Exists(oldImagePath))
-                        System.IO.File.Delete(oldImagePath);
+            int productId = imageToDelete?.ProductId ?? 0;
 
+            if (imageToDelete != null)
+            {
+                if (!string.IsNullOrEmpty(imageToDelete.ImageUrl))
+                {
+                    var blobClient = new BlobClient(new Uri(imageToDelete.ImageUrl));
+                    await blobClient.DeleteIfExistsAsync();
                 }
                 _unitOfWork.ProductImage.Remove(imageToDelete);
                 _unitOfWork.Save();
                 TempData["success"] = "Deleted successfully!";
             }
-            return RedirectToAction(nameof(Upsert), new {id = productId});
 
+            return RedirectToAction(nameof(Upsert), new { id = productId });
         }
+
 
 
         #region api calls
@@ -127,29 +138,34 @@ namespace WebSite.Areas.Admin.Controllers
             return Json(new { data = products });
         }
 
-        public IActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
-            var productToDelete = _unitOfWork.Product.Get(u  => u.Id == id);
+            var productToDelete = _unitOfWork.Product.Get(u => u.Id == id, includeProp: "Images");
             if (productToDelete == null)
             {
-                return Json(new {success = false, message = "Deleting error!"});
+                return Json(new { success = false, message = "Deleting error!" });
             }
 
-            string path = @"images\products\product-" + id;
-            string finalPath = Path.Combine(_webHostEnvironment.WebRootPath, path);
-            if (Directory.Exists(finalPath))
+            string prefix = $"products/product-{id}/";
+            await foreach (var blobItem in _blobContainerClient.GetBlobsAsync(prefix: prefix))
             {
-                string[] files = Directory.GetFiles(finalPath);
-                foreach (string file in files)
+                var blobClient = _blobContainerClient.GetBlobClient(blobItem.Name);
+                await blobClient.DeleteIfExistsAsync();
+            }
+
+            if (productToDelete.Images != null)
+            {
+                foreach (var img in productToDelete.Images)
                 {
-                    System.IO.File.Delete(file);
+                    _unitOfWork.ProductImage.Remove(img);
                 }
-                Directory.Delete(finalPath);
             }
             _unitOfWork.Product.Remove(productToDelete);
             _unitOfWork.Save();
+
             return Json(new { success = true, message = "Deleted successfully!" });
         }
+
 
         #endregion
     }

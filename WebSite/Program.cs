@@ -5,15 +5,26 @@ using WebSite.DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Identity;
 using WebSite.Utility;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using WebSite.Models;
+using Azure.Storage.Blobs;
 
 var builder = WebApplication.CreateBuilder(args);
+string BlobConnectionString = builder.Configuration.GetSection("AzureBlobSettings:ConnectionString").Value;
+string BlobContainerName = builder.Configuration.GetSection("AzureBlobSettings:ContainerName").Value;
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options => 
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddRazorPages();
+
+builder.Services.AddSingleton(x =>
+{
+    var blobServiceClient = new BlobServiceClient(BlobConnectionString);
+    var containerClient = blobServiceClient.GetBlobContainerClient(BlobContainerName);
+    _ = containerClient.CreateIfNotExistsAsync();
+    return containerClient;
+});
+
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
@@ -28,7 +39,6 @@ builder.Services.AddScoped<IEmailSender, EmailSender>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
