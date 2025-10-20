@@ -116,9 +116,14 @@ namespace WebSite.Areas.Admin.Controllers
             {
                 if (!string.IsNullOrEmpty(imageToDelete.ImageUrl))
                 {
-                    var blobClient = new BlobClient(new Uri(imageToDelete.ImageUrl));
+                    string blobName = imageToDelete.ImageUrl
+                        .Replace(_blobContainerClient.Uri.AbsoluteUri + "/", "");
+
+                    var blobClient = _blobContainerClient.GetBlobClient(blobName);
+
                     await blobClient.DeleteIfExistsAsync();
                 }
+
                 _unitOfWork.ProductImage.Remove(imageToDelete);
                 _unitOfWork.Save();
                 TempData["success"] = "Deleted successfully!";
@@ -126,6 +131,7 @@ namespace WebSite.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Upsert), new { id = productId });
         }
+
 
 
 
