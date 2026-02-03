@@ -30,31 +30,31 @@ namespace WebSite.Utility
             string paymentMethod, List<string> orderItems)
         {
             var sb = new StringBuilder();
-            sb.Append("?? <b>Нове замовлення!</b>\n");
+            sb.Append("<b>Нове замовлення!</b>\n");
             sb.Append("\n");
-            sb.Append($"?? <b>Номер замовлення:</b> #{orderId}\n");
+            sb.Append($"<b>Номер замовлення:</b> #{orderId}\n");
             sb.Append("\n");
-            sb.Append("?? <b>Інформація про клієнта:</b>\n");
+            sb.Append("<b>Інформація про клієнта:</b>\n");
             sb.Append($"   • Ім'я: {userName}\n");
             sb.Append($"   • Email: {userEmail}\n");
             sb.Append($"   • Телефон: {phoneNumber}\n");
             sb.Append("\n");
-            sb.Append("?? <b>Доставка:</b>\n");
+            sb.Append("<b>Доставка:</b>\n");
             sb.Append($"   • Адреса: {shippingAddress}\n");
             sb.Append($"   • Місто: {shippingCity}\n");
             sb.Append($"   • Індекс: {shippingPostalCode}\n");
             sb.Append("\n");
             
             string paymentMethodText = paymentMethod == "Card" ? "Картою" : "Готівкою";
-            sb.Append($"?? <b>Метод оплати:</b> {paymentMethodText}\n");
+            sb.Append($"<b>Метод оплати:</b> {paymentMethodText}\n");
             sb.Append("\n");
-            sb.Append("??? <b>Товари:</b>\n");
+            sb.Append("<b>Товари:</b>\n");
             foreach (var item in orderItems)
             {
                 sb.Append($"   • {item}\n");
             }
             sb.Append("\n");
-            sb.Append($"?? <b>Загальна сума:</b> {totalPrice:C}");
+            sb.Append($"<b>Загальна сума:</b> {totalPrice:C}");
 
             return sb.ToString();
         }
