@@ -30,31 +30,31 @@ namespace WebSite.Utility
             string paymentMethod, List<string> orderItems)
         {
             var sb = new StringBuilder();
-            sb.Append("?? <b>Нове замовлення!</b>\n");
+            sb.Append("?? <b>РќРѕРІРµ Р·Р°РјРѕРІР»РµРЅРЅСЏ!</b>\n");
             sb.Append("\n");
-            sb.Append($"?? <b>Номер замовлення:</b> #{orderId}\n");
+            sb.Append($"?? <b>РќРѕРјРµСЂ Р·Р°РјРѕРІР»РµРЅРЅСЏ:</b> #{orderId}\n");
             sb.Append("\n");
-            sb.Append("?? <b>Інформація про клієнта:</b>\n");
-            sb.Append($"   • Ім'я: {userName}\n");
-            sb.Append($"   • Email: {userEmail}\n");
-            sb.Append($"   • Телефон: {phoneNumber}\n");
+            sb.Append("?? <b>Р†РЅС„РѕСЂРјР°С†С–СЏ РїСЂРѕ РєР»С–С”РЅС‚Р°:</b>\n");
+            sb.Append($"   вЂў Р†Рј'СЏ: {userName}\n");
+            sb.Append($"   вЂў Email: {userEmail}\n");
+            sb.Append($"   вЂў РўРµР»РµС„РѕРЅ: {phoneNumber}\n");
             sb.Append("\n");
-            sb.Append("?? <b>Доставка:</b>\n");
-            sb.Append($"   • Адреса: {shippingAddress}\n");
-            sb.Append($"   • Місто: {shippingCity}\n");
-            sb.Append($"   • Індекс: {shippingPostalCode}\n");
+            sb.Append("?? <b>Р”РѕСЃС‚Р°РІРєР°:</b>\n");
+            sb.Append($"   вЂў РђРґСЂРµСЃР°: {shippingAddress}\n");
+            sb.Append($"   вЂў РњС–СЃС‚Рѕ: {shippingCity}\n");
+            sb.Append($"   вЂў Р†РЅРґРµРєСЃ: {shippingPostalCode}\n");
             sb.Append("\n");
             
-            string paymentMethodText = paymentMethod == "Card" ? "Картою" : "Готівкою";
-            sb.Append($"?? <b>Метод оплати:</b> {paymentMethodText}\n");
+            string paymentMethodText = paymentMethod == "Card" ? "РљР°СЂС‚РѕСЋ" : "Р“РѕС‚С–РІРєРѕСЋ";
+            sb.Append($"?? <b>РњРµС‚РѕРґ РѕРїР»Р°С‚Рё:</b> {paymentMethodText}\n");
             sb.Append("\n");
-            sb.Append("??? <b>Товари:</b>\n");
+            sb.Append("??? <b>РўРѕРІР°СЂРё:</b>\n");
             foreach (var item in orderItems)
             {
-                sb.Append($"   • {item}\n");
+                sb.Append($"   вЂў {item}\n");
             }
             sb.Append("\n");
-            sb.Append($"?? <b>Загальна сума:</b> {totalPrice:C}");
+            sb.Append($"?? <b>Р—Р°РіР°Р»СЊРЅР° СЃСѓРјР°:</b> {totalPrice:C}");
 
             return sb.ToString();
         }
@@ -65,7 +65,7 @@ namespace WebSite.Utility
             {
                 var url = $"https://api.telegram.org/bot{_botToken}/sendMessage";
 
-                // Створюємо об'єкт для відправки
+                // РЎС‚РІРѕСЂСЋС”РјРѕ РѕР±'С”РєС‚ РґР»СЏ РІС–РґРїСЂР°РІРєРё
                 var payload = new
                 {
                     chat_id = _chatId,
@@ -73,7 +73,7 @@ namespace WebSite.Utility
                     parse_mode = "HTML"
                 };
 
-                // Серіалізуємо в JSON з явним зазначенням UTF-8
+                // РЎРµСЂС–Р°Р»С–Р·СѓС”РјРѕ РІ JSON Р· СЏРІРЅРёРј Р·Р°Р·РЅР°С‡РµРЅРЅСЏРј UTF-8
                 var json = System.Text.Json.JsonSerializer.Serialize(payload);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -82,7 +82,7 @@ namespace WebSite.Utility
             }
             catch (Exception ex)
             {
-                // Логування
+                // Р›РѕРіСѓРІР°РЅРЅСЏ
                 Console.WriteLine($"Failed to send Telegram notification: {ex.Message}");
             }
         }
