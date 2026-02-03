@@ -64,19 +64,25 @@ namespace WebSite.Utility
             try
             {
                 var url = $"https://api.telegram.org/bot{_botToken}/sendMessage";
-                var content = new FormUrlEncodedContent(new[]
+
+                // Створюємо об'єкт для відправки
+                var payload = new
                 {
-                    new KeyValuePair<string, string>("chat_id", _chatId),
-                    new KeyValuePair<string, string>("text", message),
-                    new KeyValuePair<string, string>("parse_mode", "HTML")
-                });
+                    chat_id = _chatId,
+                    text = message,
+                    parse_mode = "HTML"
+                };
+
+                // Серіалізуємо в JSON з явним зазначенням UTF-8
+                var json = System.Text.Json.JsonSerializer.Serialize(payload);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
 
                 var response = await _httpClient.PostAsync(url, content);
                 response.EnsureSuccessStatusCode();
             }
             catch (Exception ex)
             {
-                // Log the error but don't throw to avoid breaking the order process
+                // Логування
                 Console.WriteLine($"Failed to send Telegram notification: {ex.Message}");
             }
         }
