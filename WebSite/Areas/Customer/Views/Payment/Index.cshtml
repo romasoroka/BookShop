@@ -1,54 +1,61 @@
-п»ї@model CheckoutVM
+@model CheckoutVM
 
 <div class="container py-5">
     <div class="card shadow">
         <div class="card-header bg-primary text-white">
-            <h2 class="mb-0">РЎС‚РІРѕСЂРµРЅРЅСЏ Р·Р°РјРѕРІР»РµРЅРЅСЏ</h2>
+            <h2 class="mb-0">Створення замовлення</h2>
         </div>
 
         <div class="card-body">
             <form asp-action="ProcessOrder" method="post">
                 <div class="row">
-                    <!-- Р›С–РІР° С‡Р°СЃС‚РёРЅР° - С„РѕСЂРјР° -->
                     <div class="col-md-6">
                         <div class="card mb-4">
                             <div class="card-header">
-                                <h4 class="mb-0">Р†РЅС„РѕСЂРјР°С†С–СЏ РїСЂРѕ РґРѕСЃС‚Р°РІРєСѓ</h4>
+                                <h4 class="mb-0">Інформація про доставку</h4>
                             </div>
                             <div class="card-body">
-                                <div class="form-group">
-                                    <label>РђРґСЂРµСЃР°</label>
-                                    <input asp-for="ShippingAddress" class="form-control" required>
+                                <div class="form-group mb-3">
+                                    <label>Адреса</label>
+                                    <input asp-for="ShippingAddress" class="form-control" required />
+                                    <span asp-validation-for="ShippingAddress" class="text-danger"></span>
                                 </div>
-                                <div class="form-group">
-                                    <label>РњС–СЃС‚Рѕ</label>
-                                    <input asp-for="ShippingCity" class="form-control" required>
+                                <div class="form-group mb-3">
+                                    <label>Місто</label>
+                                    <input asp-for="ShippingCity" class="form-control" required />
+                                    <span asp-validation-for="ShippingCity" class="text-danger"></span>
                                 </div>
-                                <div class="form-group">
-                                    <label>РџРѕС€С‚РѕРІРёР№ С–РЅРґРµРєСЃ</label>
-                                    <input asp-for="ShippingPostalCode" class="form-control" required>
+                                <div class="form-group mb-3">
+                                    <label>Поштовий індекс</label>
+                                    <input asp-for="ShippingPostalCode" class="form-control" required />
+                                    <span asp-validation-for="ShippingPostalCode" class="text-danger"></span>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label asp-for="PhoneNumber">Номер телефону</label>
+                                    <input asp-for="PhoneNumber" class="form-control" type="tel" required />
+                                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                    <small class="form-text text-muted">Вкажіть номер телефону для зв'язку</small>
                                 </div>
                             </div>
                         </div>
 
                         <div class="card">
                             <div class="card-header">
-                                <h4 class="mb-0">РћРїР»Р°С‚Р°</h4>
+                                <h4 class="mb-0">Оплата</h4>
                             </div>
                             <div class="card-body">
                                 <select asp-for="PaymentMethod" class="form-control mb-3">
-                                    <option value="Card">РљР°СЂС‚РѕСЋ</option>
-                                    <option value="CashOnDelivery">Р“РѕС‚С–РІРєРѕСЋ</option>
+                                    <option value="Card">Картою</option>
+                                    <option value="CashOnDelivery">Готівкою</option>
                                 </select>
                             </div>
                         </div>
                     </div>
 
-                    <!-- РџСЂР°РІР° С‡Р°СЃС‚РёРЅР° - РєРѕС€РёРє -->
                     <div class="col-md-6">
                         <div class="card h-100">
                             <div class="card-header">
-                                <h4 class="mb-0">Р’Р°С€Рµ Р·Р°РјРѕРІР»РµРЅРЅСЏ</h4>
+                                <h4 class="mb-0">Ваше замовлення</h4>
                             </div>
                             <div class="card-body">
                                 <table class="table">
@@ -66,7 +73,7 @@
                                     </tbody>
                                     <tfoot>
                                         <tr class="font-weight-bold">
-                                            <td>Р—Р°РіР°Р»СЊРЅР° СЃСѓРјР° Р·Р°РјРѕРІР»РµРЅРЅСЏ:</td>
+                                            <td>Загальна сума замовлення:</td>
                                             <td class="text-right">@Model.TotalAmount.ToString("C", new System.Globalization.CultureInfo("pl-PL"))</td>
                                         </tr>
                                     </tfoot>
@@ -74,7 +81,7 @@
                             </div>
                             <div class="card-footer bg-white">
                                 <button type="submit" class="btn btn-primary btn-block btn-lg">
-                                    <i class="fas fa-check-circle"></i> РџС–РґС‚РІРµСЂРґРёС‚Рё Р·Р°РјРѕРІР»РµРЅРЅСЏ
+                                    <i class="fas fa-check-circle"></i> Підтвердити замовлення
                                 </button>
                             </div>
                         </div>
@@ -85,3 +92,6 @@
     </div>
 </div>
 
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

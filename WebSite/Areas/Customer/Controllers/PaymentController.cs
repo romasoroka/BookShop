@@ -12,10 +12,12 @@ namespace WebSite.Areas.Customer.Controllers
     public class PaymentController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IConfiguration _configuration;
 
-        public PaymentController(IUnitOfWork unitOfWork)
+        public PaymentController(IUnitOfWork unitOfWork, IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
+            _configuration = configuration;
         }
 
         public IActionResult Index()
@@ -44,7 +46,7 @@ namespace WebSite.Areas.Customer.Controllers
         }
 
         [HttpPost]
-        public IActionResult ProcessOrder(CheckoutVM model)
+        public async Task<IActionResult> ProcessOrder(CheckoutVM model)
         {
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
@@ -60,16 +62,17 @@ namespace WebSite.Areas.Customer.Controllers
                 ShippingAddress = model.ShippingAddress,
                 ShippingCity = model.ShippingCity,
                 ShippingPostalCode = model.ShippingPostalCode,
+                PhoneNumber = model.PhoneNumber,
                 Status = OS.Ordered
             };
 
-            // 2. Додавання товарів до замовлення
             // 2. Додавання товарів до замовлення
             var cartItems = _unitOfWork.ShoppingCart.GetAll(
                 includeProp: "Product")
                 .Where(x => x.ApplicationUserId == userId);
 
             order.TotalPrice = 0; // Ініціалізація
+            var orderItemsList = new List<string>();
 
             foreach (var item in cartItems)
             {
@@ -82,6 +85,9 @@ namespace WebSite.Areas.Customer.Controllers
                     Quantity = item.Count,
                     Price = (decimal)item.Product.Price
                 });
+
+                // Для повідомлення в Telegram
+                orderItemsList.Add($"{item.Product.Title} x {item.Count} = {itemTotalPrice.ToString("C", new System.Globalization.CultureInfo("pl-PL"))}");
             }
 
             // 3. Обробка оплати
@@ -92,8 +98,6 @@ namespace WebSite.Areas.Customer.Controllers
                 PaymentMethod = model.PaymentMethod,
             };
 
-           
-
             // Зберігаємо дані
             _unitOfWork.Payment.Add(payment);
             _unitOfWork.Save();
@@ -102,9 +106,42 @@ namespace WebSite.Areas.Customer.Controllers
             _unitOfWork.Order.Add(order);
             _unitOfWork.Save();
 
+            // 4. Отримуємо дані користувача для повідомлення
+            var user = _unitOfWork.ApplicationUser.Get(u => u.Id == userId);
+
+            // 5. Надсилаємо повідомлення в Telegram
+            try
+            {
+                var botToken = _configuration["TelegramBot:BotToken"];
+                var chatId = _configuration["TelegramBot:ChatId"];
+
+                if (!string.IsNullOrEmpty(botToken) && !string.IsNullOrEmpty(chatId))
+                {
+                    var telegramService = new TelegramNotificationService(botToken, chatId);
+                    await telegramService.SendOrderNotificationAsync(
+                        order.Id,
+                        user?.Name ?? "N/A",
+                        user?.Email ?? "N/A",
+                        model.PhoneNumber,
+                        order.TotalPrice,
+                        model.ShippingAddress,
+                        model.ShippingCity,
+                        model.ShippingPostalCode,
+                        model.PaymentMethod,
+                        orderItemsList
+                    );
+                }
+            }
+            catch (Exception ex)
+            {
+                // Логуємо помилку, але не перериваємо процес
+                Console.WriteLine($"Failed to send Telegram notification: {ex.Message}");
+            }
+
             // Очищаємо кошик
             _unitOfWork.ShoppingCart.RemoveRange(cartItems);
             _unitOfWork.Save();
+            
             var alertData = new
             {
                 Title = "Замовлення успішно створено!",

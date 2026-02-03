@@ -42,6 +42,11 @@ namespace WebSite.Models
         [MaxLength(20)]
         public string ShippingPostalCode { get; set; }
 
+        // Контактний номер телефону
+        [Phone]
+        [MaxLength(20)]
+        public string PhoneNumber { get; set; }
+
         // Зв'язок із оплатою
         public int? PaymentId { get; set; }
 

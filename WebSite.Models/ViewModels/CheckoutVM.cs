@@ -7,14 +7,20 @@ public class CheckoutVM
     public decimal TotalAmount { get; set; }
 
     // Дані для доставки
-    [Required]
+    [Required(ErrorMessage = "Адреса є обов'язковою")]
     public string ShippingAddress { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "Місто є обов'язковим")]
     public string ShippingCity { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "Поштовий індекс є обов'язковим")]
     public string ShippingPostalCode { get; set; }
+
+    // Контактний номер телефону
+    [Required(ErrorMessage = "Номер телефону є обов'язковим")]
+    [Phone(ErrorMessage = "Некоректний номер телефону")]
+    [Display(Name = "Номер телефону")]
+    public string PhoneNumber { get; set; }
 
     // Метод оплати
     [Required]
