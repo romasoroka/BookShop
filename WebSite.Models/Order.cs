@@ -22,8 +22,7 @@ namespace WebSite.Models
         public ApplicationUser User { get; set; }
 
         [Required]
-        public DateTime OrderDate { get; set; } = DateTime.Now;
-
+        public DateTime OrderDate { get; set; } = DateTime.UtcNow;
         [Required]
         [Range(0.01, 100000)]
         public decimal TotalPrice { get; set; }
