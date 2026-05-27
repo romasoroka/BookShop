@@ -137,7 +137,9 @@
                         <div class="product-image-container" style="height: 250px; overflow: hidden;">
                             @if (product.Images != null && product.Images.Any())
                             {
-                                <img src="@product.Images.First().ImageUrl" class="card-img-top p-3 w-100 h-100" alt="@product.Title" style="object-fit: contain;">
+                                var mainImage = product.Images.OrderBy(i => i.Id).First();
+
+                                <img src="@mainImage.ImageUrl" class="card-img-top p-3 w-100 h-100" alt="@product.Title" style="object-fit: contain;">
                             }
                             else
                             {

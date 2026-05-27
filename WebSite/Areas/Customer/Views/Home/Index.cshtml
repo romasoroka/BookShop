@@ -49,7 +49,9 @@
                     }
                     @if (product.Images != null && product.Images.Any())
                     {
-                        <img src="@product.Images.First().ImageUrl" class="card-img-top p-3 zoom-effect" alt="@product.Title" style="height: 250px; object-fit: contain;">
+                        var mainImage = product.Images.OrderBy(i => i.Id).First();
+
+                        <img src="@mainImage.ImageUrl" class="card-img-top p-3 zoom-effect" alt="@product.Title" style="height: 250px; object-fit: contain;">
                     }
                     else
                     {
@@ -132,7 +134,9 @@
                     </div>
                     @if (product.Images != null && product.Images.Any())
                     {
-                        <img src="@product.Images.First().ImageUrl" class="card-img-top p-3 zoom-effect" alt="@product.Title" style="height: 250px; object-fit: contain;">
+                        var mainImage = product.Images.OrderBy(i => i.Id).First();
+
+                        <img src="@mainImage.ImageUrl" class="card-img-top p-3 zoom-effect" alt="@product.Title" style="height: 250px; object-fit: contain;">
                     }
                     else
                     {
